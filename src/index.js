@@ -8,6 +8,8 @@ export default class CheapState {
   static getNamespacedKeyName(namespace, keyname) {
     let namespacedKeyName = '';
 
+    if (!keyname) throw new Error('keyname is required');
+
     if (namespace && !keyname.includes(`${namespace}.`)) {
       namespacedKeyName = `${namespace}.${keyname}`;
     }
@@ -51,13 +53,14 @@ export default class CheapState {
    */
   static unconvertValue(value) {
     let unconvertedValue = value;
-    if (typeof value === 'string') {
+    const isString = typeof value === 'string';
+
+    if (isString) {
       unconvertedValue = value.trim();
     }
 
-    if (value && (value.indexOf('{') === 0 || value.indexOf('[') === 0)) {
-      unconvertedValue = JSON.parse(value);
-    }
+    unconvertedValue = JSON.parse(unconvertedValue);
+
     return unconvertedValue;
   }
 
