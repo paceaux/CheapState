@@ -70,16 +70,21 @@ export default class CheapState {
 
   /**
    * @param  {string} [namespace] the namespace that goes with this CheapState class
-   * @param  {StorageType} [type] either local or session
+   * @param  {StorageType} [type="local"] either local or session
    */
   constructor(namespace = '', type = 'local') {
     this.namespace = namespace;
     this.observers = [];
 
-    const typeName = type.toLowerCase();
+    const typeName = type
+      .toLowerCase()
+      .replace(/storage/i, '')
+      .trim();
 
     if (typeName === 'local' || typeName === 'session') {
       this.type = type;
+    } else {
+      throw new Error('type must be either "local" or "session"');
     }
 
     if (namespace) {
