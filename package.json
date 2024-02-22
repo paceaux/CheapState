@@ -1,6 +1,6 @@
 {
   "name": "cheapstate",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "A localStorage pubSub pattern for the masses",
   "main": "src/index.js",
   "repository": {
@@ -10,7 +10,7 @@
   "scripts": {
     "lint": "eslint -f table src/**/*.js",
     "lint:fix": "eslint --fix src/**/*.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "web-test-runner \"test/**/*.test.js\" --node-resolve --coverage"
   },
   "keywords": [
     "state",
@@ -21,6 +21,8 @@
   "author": "paceaux (frank m. taylor)",
   "license": "MIT",
   "devDependencies": {
+    "@esm-bundle/chai": "^4.3.4-fix.0",
+    "@web/test-runner": "^0.18.0",
     "eslint": "^8.56.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-formatter-table": "^7.32.1",

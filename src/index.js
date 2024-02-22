@@ -8,6 +8,8 @@ export default class CheapState {
   static getNamespacedKeyName(namespace, keyname) {
     let namespacedKeyName = '';
 
+    if (!keyname) throw new Error('keyname is required');
+
     if (namespace && !keyname.includes(`${namespace}.`)) {
       namespacedKeyName = `${namespace}.${keyname}`;
     }
@@ -29,11 +31,12 @@ export default class CheapState {
       storage.setItem('CheapStateNamespaces', CheapState.convertValue(namespaces));
     } else if (!currentNamespaces.includes(namespace)) {
       currentNamespaces.push(namespace);
-      storage.setItem('CheapStateNamespaces', CheapState.unconvertValue(currentNamespaces));
+      storage.setItem('CheapStateNamespaces', CheapState.convertValue(currentNamespaces));
     }
   }
 
   /**
+   * @description Makes a value safe to be stored in storage
    * @param  {*} value item to be stringified
    * @returns {string} stringified item
    */
@@ -46,18 +49,26 @@ export default class CheapState {
   }
 
   /**
+   * @description Converts a string into a JavaScript type
    * @param  {string} value Item that should be parsed
    * @returns {string | boolean | number | object | Array} whatever the value is, it's returned parsed
    */
   static unconvertValue(value) {
     let unconvertedValue = value;
-    if (typeof value === 'string') {
+    const isString = typeof value === 'string';
+    const isStringyObject = isString && value.indexOf('{') !== -1;
+    const isStringyArray = isString && value.indexOf('[') !== -1;
+    const isStringyNumber = isString && !Number.isNaN(Number(value)) && !Number.isNaN(parseFloat(value));
+    const isStringyBoolean = isString && (value === 'true' || value === 'false');
+    if (isString) {
       unconvertedValue = value.trim();
     }
 
-    if (value && (value.indexOf('{') === 0 || value.indexOf('[') === 0)) {
-      unconvertedValue = JSON.parse(value);
+    // you can JSON.parse just about everything except an actual string
+    if (isStringyObject || isStringyArray || isStringyNumber || isStringyBoolean) {
+      unconvertedValue = JSON.parse(unconvertedValue);
     }
+
     return unconvertedValue;
   }
 
@@ -67,16 +78,21 @@ export default class CheapState {
 
   /**
    * @param  {string} [namespace] the namespace that goes with this CheapState class
-   * @param  {StorageType} [type] either local or session
+   * @param  {StorageType} [type="local"] either local or session
    */
   constructor(namespace = '', type = 'local') {
     this.namespace = namespace;
     this.observers = [];
 
-    const typeName = type.toLowerCase();
+    const typeName = type
+      .toLowerCase()
+      .replace(/storage/i, '')
+      .trim();
 
     if (typeName === 'local' || typeName === 'session') {
       this.type = type;
+    } else {
+      throw new Error('type must be either "local" or "session"');
     }
 
     if (namespace) {
@@ -84,7 +100,9 @@ export default class CheapState {
     }
 
     window.addEventListener('storage', (evt) => {
-      const key = evt.key.replace(`${this.namespace}.`, '');
+      const key = this.namespace
+        ? evt.key.replace(`${this.namespace}.`, '')
+        : evt.key;
 
       const notifyObject = {
         type: 'storageEvent',
@@ -109,14 +127,14 @@ export default class CheapState {
   get items() {
     const items = new Map();
     const storageSize = this.storage.length;
-    let index = storageSize - 1;
+    let index = storageSize;
 
     // eslint-disable-next-line no-plusplus
     while (--index > -1) {
       const keyName = this.storage.key(index);
       if (keyName.indexOf(this.namespace) === 0) {
         const unnamespacedKey = keyName.replace(`${this.namespace}.`, '');
-        items.set(unnamespacedKey, this.get(keyName));
+        items.set(unnamespacedKey, this.get(unnamespacedKey));
       }
     }
 
@@ -180,10 +198,25 @@ export default class CheapState {
 
   /**
    * Sets an object's keys and values into storage
-   * @param {object} dataObject an object to be serialized and stored
+   * @param {Object|Map|Set|Array} dataObject an object to be serialized and stored
    */
   setObject(dataObject) {
-    const clone = JSON.parse(JSON.stringify(dataObject));
+    if (!dataObject && typeof dataObject !== 'object') {
+      throw new Error('setObject must be sent an object');
+    }
+    const isSet = dataObject instanceof Set;
+    const isMap = dataObject instanceof Map;
+    let data = dataObject;
+
+    if (isSet) {
+      data = Array.from(dataObject);
+    }
+
+    if (isMap) {
+      data = Object.fromEntries(dataObject);
+    }
+
+    const clone = JSON.parse(JSON.stringify(data));
     Object.keys(clone).forEach((key) => {
       this.set(key, clone[key]);
     });
@@ -254,7 +287,7 @@ export default class CheapState {
    */
   subscribe(observable) {
     if (typeof observable !== 'function') {
-      throw new Error(`${typeof observable} is not a function`);
+      throw new Error(`observer must be a function, was sent a ${typeof observable}`);
     }
 
     this.observers.push(observable);
@@ -266,7 +299,7 @@ export default class CheapState {
    */
   unsubscribe(observable) {
     if (typeof observable !== 'function') {
-      throw new Error(`${typeof observable} is not a function`);
+      throw new Error(`observer must be a function, was sent a ${typeof observable}`);
     }
 
     this.observers = this.observers.filter((observer) => observer !== observable);
