@@ -125,7 +125,7 @@ export default class CheapState {
   get items() {
     const items = new Map();
     const storageSize = this.storage.length;
-    let index = storageSize - 1;
+    let index = storageSize;
 
     // eslint-disable-next-line no-plusplus
     while (--index > -1) {
