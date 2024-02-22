@@ -79,6 +79,12 @@ describe('CheapState: static methods', () => {
       const result = localStorage.getItem('CheapStateNamespaces');
       expect(result).to.equal('["foo"]');
     });
+    it('can register multiple namespaces', () => {
+      CheapState.registerNamespace('beep', localStorage);
+      CheapState.registerNamespace('boop', localStorage);
+      CheapState.registerNamespace('bap', localStorage);
+      expect(localStorage.getItem('CheapStateNamespaces')).to.equal('["foo","beep","boop","bap"]');
+    });
   });
   describe('getNamespacedKeyName', () => {
     it('should return a namespaced keyname', () => {
@@ -146,8 +152,6 @@ describe('CheapState: instance', () => {
       it('should have a different size if something is added', () => {
         const instance = new CheapState('size-test');
         instance.set('foo', 'bar');
-        console.log(instance.items.get('foo'));
-        console.log(instance.get('foo'));
         const result = instance.size;
         expect(result).to.equal(1);
       });
@@ -158,17 +162,17 @@ describe('CheapState: instance', () => {
         expect(result).to.equal(instance.size);
       });
     });
-    describe.skip('items', () => {
+    describe('items', () => {
       it('should return a Map', () => {
-        const instance = new CheapState();
-        expect(instance.items).to.be.an.instanceOf(Map);
+        const instance = new CheapState('map-test');
+        const { items } = instance;
+        expect(items).to.be.an.instanceOf(Map);
       });
-      it('should return a Map with items', () => {
-        const instance = new CheapState('items-test');
+      it.skip('should return a Map with items', () => {
+        const instance = new CheapState('map-test');
         instance.set('foo', 'bar');
-        const result = instance.items;
-        expect(result).to.be.an.instanceOf(Map);
-        expect(result.get('foo')).to.equal('bar');
+        const { items } = instance;
+        expect(items.get('foo')).to.equal('bar');
       });
     });
   });

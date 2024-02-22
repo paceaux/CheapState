@@ -31,7 +31,7 @@ export default class CheapState {
       storage.setItem('CheapStateNamespaces', CheapState.convertValue(namespaces));
     } else if (!currentNamespaces.includes(namespace)) {
       currentNamespaces.push(namespace);
-      storage.setItem('CheapStateNamespaces', CheapState.unconvertValue(currentNamespaces));
+      storage.setItem('CheapStateNamespaces', CheapState.convertValue(currentNamespaces));
     }
   }
 
