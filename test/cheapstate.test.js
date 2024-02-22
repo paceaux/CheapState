@@ -181,8 +181,14 @@ describe('CheapState: instance', () => {
         expect(items.get('beep')).to.equal(true);
       });
     });
+    describe('observers', () => {
+      it('should return an array', () => {
+        const instance = new CheapState('observers-test');
+        expect(instance.observers).to.be.an.instanceOf(Array);
+      });
+    });
   });
-  describe('methods', () => {
+  describe('storage methods', () => {
     describe('hasNamespace', () => {
       it('should return true if the namespace exists', () => {
         const instance = new CheapState('has-namespace');
@@ -304,6 +310,82 @@ describe('CheapState: instance', () => {
         const result = instance.get('foo');
         expect(result).to.equal(null);
         expect(instance.size).to.equal(0);
+      });
+    });
+  });
+  describe('observer methods', () => {
+    describe('subscribe', () => {
+      it('should add an observer', () => {
+        const instance = new CheapState('subscribe-test');
+        const observer = () => {};
+        instance.subscribe(observer);
+        expect(instance.observers.length).to.equal(1);
+      });
+      it('should throw if observer is not a function', () => {
+        const instance = new CheapState('subscribe-test');
+        const observer = 'foo';
+        const badCall = () => instance.subscribe(observer);
+        expect(badCall).to.throw('observer must be a function, was sent a string');
+      });
+    });
+    describe('unsubscribe', () => {
+      it('should remove an observer', () => {
+        const instance = new CheapState('unsubscribe-test');
+        const observer = () => {};
+        instance.subscribe(observer);
+        instance.unsubscribe(observer);
+        expect(instance.observers.length).to.equal(0);
+      });
+      it('should throw if observer is not a function', () => {
+        const instance = new CheapState('unsubscribe-test');
+        const observer = 'foo';
+        const badCall = () => instance.unsubscribe(observer);
+        expect(badCall).to.throw('observer must be a function, was sent a string');
+      });
+      it('should not remove an observer if it does not exist', () => {
+        const instance = new CheapState('unsubscribe-test');
+        const observer = () => {};
+        instance.unsubscribe(observer);
+        expect(instance.observers.length).to.equal(0);
+      });
+    });
+    describe('notify', () => {
+      it('should notify an observer', () => {
+        const instance = new CheapState('notify-test');
+        let notified = false;
+        const observer = () => {
+          notified = true;
+        };
+        instance.subscribe(observer);
+        instance.notify();
+        expect(notified).to.equal(true);
+      });
+      it('should notify when a storage event occurs', () => {
+        const instance = new CheapState('notify-test');
+        let notifyPayload = {};
+        const observer = (payload) => {
+          notifyPayload = payload;
+        };
+        instance.subscribe(observer);
+        instance.set('foo', 'bar');
+        expect(notifyPayload.type).to.equal('set');
+        expect(notifyPayload.key).to.equal('foo');
+        expect(notifyPayload.value).to.equal('bar');
+      });
+      // note: this also validates that window.addEventListener() works as expected
+      it('an event with overriding data has an oldValue property', () => {
+        const instance = new CheapState('notify-test-2');
+        let notifyPayload = {};
+        const observer = (payload) => {
+          notifyPayload = payload;
+        };
+        instance.subscribe(observer);
+        instance.set('foo', 'bar');
+        instance.set('foo', 'baz');
+        expect(notifyPayload.type).to.equal('set');
+        expect(notifyPayload.key).to.equal('foo');
+        expect(notifyPayload.value).to.equal('baz');
+        expect(notifyPayload.oldValue).to.equal('bar');
       });
     });
   });

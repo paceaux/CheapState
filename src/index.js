@@ -285,7 +285,7 @@ export default class CheapState {
    */
   subscribe(observable) {
     if (typeof observable !== 'function') {
-      throw new Error(`${typeof observable} is not a function`);
+      throw new Error(`observer must be a function, was sent a ${typeof observable}`);
     }
 
     this.observers.push(observable);
@@ -297,7 +297,7 @@ export default class CheapState {
    */
   unsubscribe(observable) {
     if (typeof observable !== 'function') {
-      throw new Error(`${typeof observable} is not a function`);
+      throw new Error(`observer must be a function, was sent a ${typeof observable}`);
     }
 
     this.observers = this.observers.filter((observer) => observer !== observable);
