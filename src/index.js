@@ -54,12 +54,18 @@ export default class CheapState {
   static unconvertValue(value) {
     let unconvertedValue = value;
     const isString = typeof value === 'string';
-
+    const isStringyObject = isString && value.indexOf('{') !== -1;
+    const isStringyArray = isString && value.indexOf('[') !== -1;
+    const isStringyNumber = isString && !Number.isNaN(Number(value)) && !Number.isNaN(parseFloat(value));
+    const isStringyBoolean = isString && (value === 'true' || value === 'false');
     if (isString) {
       unconvertedValue = value.trim();
     }
 
-    unconvertedValue = JSON.parse(unconvertedValue);
+    // you can JSON.parse just about everything except an actual string
+    if (isStringyObject || isStringyArray || isStringyNumber || isStringyBoolean) {
+      unconvertedValue = JSON.parse(unconvertedValue);
+    }
 
     return unconvertedValue;
   }
@@ -92,7 +98,9 @@ export default class CheapState {
     }
 
     window.addEventListener('storage', (evt) => {
-      const key = evt.key.replace(`${this.namespace}.`, '');
+      const key = this.namespace
+        ? evt.key.replace(`${this.namespace}.`, '')
+        : evt.key;
 
       const notifyObject = {
         type: 'storageEvent',
