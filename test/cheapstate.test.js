@@ -296,5 +296,15 @@ describe('CheapState: instance', () => {
         expect(instance.get('1')).to.equal('bar');
       });
     });
+    describe('clear', () => {
+      it('should clear the storage', () => {
+        const instance = new CheapState('clear-test');
+        instance.set('oof', 'rab');
+        instance.clear();
+        const result = instance.get('foo');
+        expect(result).to.equal(null);
+        expect(instance.size).to.equal(0);
+      });
+    });
   });
 });
