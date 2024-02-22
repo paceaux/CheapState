@@ -1,6 +1,6 @@
 {
   "name": "cheapstate",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "A localStorage pubSub pattern for the masses",
   "main": "src/index.js",
   "repository": {
