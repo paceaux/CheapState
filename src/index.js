@@ -199,7 +199,22 @@ export default class CheapState {
    * @param {object} dataObject an object to be serialized and stored
    */
   setObject(dataObject) {
-    const clone = JSON.parse(JSON.stringify(dataObject));
+    if (!dataObject && typeof dataObject !== 'object') {
+      throw new Error('setObject must be sent an object');
+    }
+    const isSet = dataObject instanceof Set;
+    const isMap = dataObject instanceof Map;
+    let data = dataObject;
+
+    if (isSet) {
+      data = Array.from(dataObject);
+    }
+
+    if (isMap) {
+      data = Object.fromEntries(dataObject);
+    }
+
+    const clone = JSON.parse(JSON.stringify(data));
     Object.keys(clone).forEach((key) => {
       this.set(key, clone[key]);
     });

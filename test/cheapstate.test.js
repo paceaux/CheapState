@@ -182,4 +182,119 @@ describe('CheapState: instance', () => {
       });
     });
   });
+  describe('methods', () => {
+    describe('hasNamespace', () => {
+      it('should return true if the namespace exists', () => {
+        const instance = new CheapState('has-namespace');
+        const result = instance.hasNamespace('has-namespace');
+        expect(result).to.equal(true);
+      });
+      it('should return false if the namespace does not exist', () => {
+        const instance = new CheapState('has-namespace');
+        const result = instance.hasNamespace('no-namespace');
+        expect(result).to.equal(false);
+      });
+    });
+    describe('set', () => {
+      it('should set an item', () => {
+        const instance = new CheapState('set-test');
+        instance.set('foo', 'bar');
+        const result = instance.get('foo');
+        expect(result).to.equal('bar');
+        expect(localStorage.getItem('set-test.foo')).to.equal('bar');
+      });
+      it('should set an item with a namespace', () => {
+        const instance = new CheapState('set-test', 'session');
+        instance.set('foo', 'bar');
+        const result = sessionStorage.getItem('set-test.foo');
+        expect(result).to.equal('bar');
+      });
+    });
+    describe('get', () => {
+      it('should get an item', () => {
+        const instance = new CheapState('get-test');
+        instance.set('foo', 'bar');
+        const result = instance.get('foo');
+        expect(result).to.equal('bar');
+      });
+      it('should get an item with a namespace', () => {
+        const instance = new CheapState('get-test', 'session');
+        instance.set('foo', 'bar');
+        const result = instance.get('foo');
+        expect(result).to.equal('bar');
+      });
+    });
+    describe('delete', () => {
+      it('should delete an item', () => {
+        const instance = new CheapState('delete-test');
+        instance.set('foo', 'bar');
+        instance.delete('foo');
+        const result = instance.get('foo');
+        expect(result).to.equal(null);
+      });
+      it('should delete an item with a namespace', () => {
+        const instance = new CheapState('delete-test', 'session');
+        instance.set('foo', 'bar');
+        instance.delete('foo');
+        const result = instance.get('foo');
+        expect(result).to.equal(null);
+      });
+    });
+    describe('has', () => {
+      it('should return true if the item exists', () => {
+        const instance = new CheapState('has-test');
+        instance.set('foo', 'bar');
+        const result = instance.has('foo');
+        expect(result).to.equal(true);
+      });
+      it('should return false if the item does not exist', () => {
+        const instance = new CheapState('has-test');
+        const result = instance.has('booo');
+        expect(result).to.equal(false);
+      });
+    });
+    describe('setObject', () => {
+      it('should set an object', () => {
+        const instance = new CheapState('set-object-test');
+        const obj = {
+          foo: 'bar',
+          bar: 1,
+          baz: { a: 1 },
+          beep: true,
+        };
+        instance.setObject(obj);
+        const result = instance.get('foo');
+        expect(result).to.equal('bar');
+        expect(instance.get('bar')).to.equal(1);
+        expect(instance.get('baz')).to.deep.equal({ a: 1 });
+        expect(instance.get('beep')).to.equal(true);
+      });
+      it('should throw if an object is not provided', () => {
+        const instance = new CheapState('set-object-test');
+        const badCall = () => instance.setObject();
+        expect(badCall).to.throw('setObject must be sent an object');
+      });
+      it('should work if sent an array', () => {
+        const instance = new CheapState('set-object-test-array');
+        const obj = ['foo', 'bar'];
+        instance.setObject(obj);
+        const result = instance.get('0');
+        expect(result).to.equal('foo');
+      });
+      it('should work if sent a map', () => {
+        const instance = new CheapState('set-object-test-map');
+        const map = new Map([['foo', 'ood'], ['bar', 'ard']]);
+        instance.setObject(map);
+        expect(instance.get('foo')).to.equal('ood');
+        expect(instance.get('bar')).to.equal('ard');
+      });
+      it('should work if sent a set', () => {
+        const instance = new CheapState('set-set-test-set');
+        const set = new Set(['foo', 'bar']);
+        instance.setObject(set);
+        expect(instance.get('0')).to.equal('foo');
+        expect(instance.get('1')).to.equal('bar');
+      });
+    });
+  });
 });
