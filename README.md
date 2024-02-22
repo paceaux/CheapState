@@ -2,18 +2,33 @@
 
 A namespaceable localStorage pub/sub utility for the masses.
 
-Instantiate a CheapState instance, add some data, and some subscribers, and do what you want.
+Event-driven, persistent state management built on top of localStorage and sessionStorage.
 
 ## Examples
 
-Instantiantiating:
+### Instantiantiating:
 
 ```javascript
 const pointsStorage = new CheapState('points');
 pointsStorage.set('paceaux', 10);
 ```
 
-Saving an object
+Optionally, instantiate with sessionStorage:
+    
+```javascript
+const pointsStorage = new CheapState('points', 'session');
+```
+
+### Saving & Getting items
+```javascript
+
+pointsStorage.set('frank', 10);
+pointsStorage.get('frank');// 10
+
+```
+
+#### Saving an object
+
 ```javascript
 
 pointsStorage.setObject({
@@ -21,21 +36,37 @@ pointsStorage.setObject({
     'joe': 20,
     'sally': 30
 });
+pointsStorage.get('frank'); // 10
 ```
 
-Deleting an item:
+#### Saving a map
+
+```javascript
+const points = new Map([
+    ['frank', 10],
+    ['joe', 20],
+    ['sally', 30]
+]);
+
+pointsStorage.setObject(points);
+pointsStorage.get('frank'); // 10
+```
+
+### Deleting and Clearing
+
+#### Delete an item
 
 ```javascript
 pointsStorage.delete('sally');
 ```
 
-Clearing the storage:
+#### Clearing the storage
 
 ```javascript
 pointsStorage.clear();
 ```
 
-Add subscribers for when the storage changes:
+### Adding & subscribing
 
 ```javascript
 const badgeEls = document.querySelectorAll('.badge');
