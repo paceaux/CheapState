@@ -168,11 +168,17 @@ describe('CheapState: instance', () => {
         const { items } = instance;
         expect(items).to.be.an.instanceOf(Map);
       });
-      it.skip('should return a Map with items', () => {
-        const instance = new CheapState('map-test');
+      it('should return a Map with items', () => {
+        const instance = new CheapState('map-test1');
         instance.set('foo', 'bar');
+        instance.set('bar', 1);
+        instance.set('baz', { a: 1 });
+        instance.set('beep', true);
         const { items } = instance;
         expect(items.get('foo')).to.equal('bar');
+        expect(items.get('bar')).to.equal(1);
+        expect(items.get('baz')).to.deep.equal({ a: 1 });
+        expect(items.get('beep')).to.equal(true);
       });
     });
   });

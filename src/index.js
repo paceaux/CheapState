@@ -132,7 +132,7 @@ export default class CheapState {
       const keyName = this.storage.key(index);
       if (keyName.indexOf(this.namespace) === 0) {
         const unnamespacedKey = keyName.replace(`${this.namespace}.`, '');
-        items.set(unnamespacedKey, this.get(keyName));
+        items.set(unnamespacedKey, this.get(unnamespacedKey));
       }
     }
 
