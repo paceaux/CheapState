@@ -36,6 +36,7 @@ export default class CheapState {
   }
 
   /**
+   * @description Makes a value safe to be stored in storage
    * @param  {*} value item to be stringified
    * @returns {string} stringified item
    */
@@ -48,6 +49,7 @@ export default class CheapState {
   }
 
   /**
+   * @description Converts a string into a JavaScript type
    * @param  {string} value Item that should be parsed
    * @returns {string | boolean | number | object | Array} whatever the value is, it's returned parsed
    */
@@ -196,7 +198,7 @@ export default class CheapState {
 
   /**
    * Sets an object's keys and values into storage
-   * @param {object} dataObject an object to be serialized and stored
+   * @param {Object|Map|Set|Array} dataObject an object to be serialized and stored
    */
   setObject(dataObject) {
     if (!dataObject && typeof dataObject !== 'object') {

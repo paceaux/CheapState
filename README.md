@@ -64,7 +64,7 @@ Global Class
 | name      | type  | Description   |
 | ---       |---    | ---           |
 | namespace    | string       |     the namespaces that goes with the CheapState class        |
-| type    | string       |     `'local|session'`      | either local or session storage. Defaults to local.        |
+| type    | string       |     `local` or `session`      | either local or session storage. Defaults to local.        |
 
 ### Static Methods
 
@@ -95,7 +95,7 @@ Makes a value safe to be stored in localStorage.
 
 #### `unconvertValue(value)`
 
-Parse a value back into JavaScript
+Converts a string into a JavaScript value;
 
 ##### Parameters
 
@@ -173,13 +173,13 @@ Sets an item into storage
 
 #### `setObject(dataObject)`
 
-Takes an object and takes the properties, sets them as keys, and takes the values and sets them as values.
+Sets an object's keys and values into storage. 
 
 ##### Parameters
 
 | name      | type  | Description   |
 | ---       |---    | ---           |
-| dataObject    | Object       |   an object to be serialized and stored        |
+| dataObject    | Object|Map|Set|Array       |   an object to be serialized and stored        |
 
 
 #### `get(key)`
