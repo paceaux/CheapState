@@ -102,7 +102,7 @@ describe('CheapState: static methods', () => {
   });
 });
 
-describe('CheapState: instance methods', () => {
+describe('CheapState: instance', () => {
   describe('constructor', () => {
     it('should create a new instance', () => {
       const instance = new CheapState();
@@ -118,6 +118,58 @@ describe('CheapState: instance methods', () => {
       const type = 'foo';
       const badCall = () => new CheapState(namespace, type);
       expect(badCall).to.throw('type must be either "local" or "session"');
+    });
+  });
+  describe('properties', () => {
+    describe('storage', () => {
+      it('should return localStorage', () => {
+        const instance = new CheapState();
+        expect(instance.storage).to.equal(localStorage);
+      });
+      it('should return sessionStorage', () => {
+        const instance = new CheapState('', 'session');
+        expect(instance.storage).to.equal(sessionStorage);
+      });
+    });
+    describe('namespaces', () => {
+      it('should return an array', () => {
+        const instance = new CheapState();
+        expect(instance.namespaces).to.be.an.instanceOf(Array);
+      });
+    });
+    describe('size and length', () => {
+      it('should return the length of the storage', () => {
+        const instance = new CheapState('size-test');
+        const result = instance.size;
+        expect(result).to.equal(0);
+      });
+      it('should have a different size if something is added', () => {
+        const instance = new CheapState('size-test');
+        instance.set('foo', 'bar');
+        console.log(instance.items.get('foo'));
+        console.log(instance.get('foo'));
+        const result = instance.size;
+        expect(result).to.equal(1);
+      });
+      it('should have a length that is same as size', () => {
+        const instance = new CheapState('size-test');
+        instance.set('foo', 'bar');
+        const result = instance.length;
+        expect(result).to.equal(instance.size);
+      });
+    });
+    describe.skip('items', () => {
+      it('should return a Map', () => {
+        const instance = new CheapState();
+        expect(instance.items).to.be.an.instanceOf(Map);
+      });
+      it('should return a Map with items', () => {
+        const instance = new CheapState('items-test');
+        instance.set('foo', 'bar');
+        const result = instance.items;
+        expect(result).to.be.an.instanceOf(Map);
+        expect(result.get('foo')).to.equal('bar');
+      });
     });
   });
 });
