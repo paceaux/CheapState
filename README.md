@@ -1,3 +1,10 @@
+<p align="center">
+    <img  width="300" src="./cheapStateLogo.svg">
+  <p align="center">The easy way to do state</p>
+</p>
+
+[![License][license-image]][license-url] [![Downloads][downloads-image]][downloads-url]
+
 # CheapState
 
 A namespaceable localStorage pub/sub utility for the masses.
@@ -286,3 +293,9 @@ Sends a payload to the observer
 | name      | type  | Description   |
 | ---       |---    | ---           |
 | data    | any       |  a message to send when a change happens. It's sent to all observers.      |
+
+
+[license-image]: http://img.shields.io/npm/l/cheapstate.svg
+[license-url]: LICENSE
+[downloads-image]: http://img.shields.io/npm/dm/cheapstate.svg
+[downloads-url]: http://npm-stat.com/charts.html?package=cheapstate
